@@ -4,19 +4,16 @@ import (
 	"github.com/go-telegram/bot"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
-	"go.uber.org/zap"
 	. "plassstic.tech/gopkg/golang-manager/internal/depend"
+	l "plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
 )
 
 func main() {
 	fx.New(
-		fx.WithLogger(func(log *zap.SugaredLogger) fxevent.Logger {
-			return &fxevent.ZapLogger{Logger: log.Desugar().Named("zap")}
-		}),
+		fx.WithLogger(func() fxevent.Logger { return &fxevent.ZapLogger{Logger: l.GetLogger("zap").Desugar()} }),
 
 		fx.Provide(
-			NewLogger,
 			NewConfig,
 			NewEntClient,
 			fx.Annotate(NewTelegramBot, fx.ParamTags(`group:"handlers"`)),

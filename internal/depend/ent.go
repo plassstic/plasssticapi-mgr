@@ -4,19 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-
 	_ "github.com/lib/pq"
+	"go.uber.org/fx"
 )
 
-func NewEntClient(lc fx.Lifecycle, config *Config, log *zap.SugaredLogger) *ent.Client {
+func NewEntClient(lc fx.Lifecycle, config *Config) *ent.Client {
+	log := logger.GetLogger("database.NewEntClient")
 	client, err := ent.Open("postgres", config.PostgresData)
 
 	if err != nil {
-		log.Named("database.NewEntClient").Panic(fmt.Sprintf("panic! <%T> %v", err, err))
+		log.Panic(fmt.Sprintf("panic! <%T> %v", err, err))
 	}
 
 	lc.Append(fx.Hook{

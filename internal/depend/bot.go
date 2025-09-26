@@ -6,22 +6,24 @@ import (
 
 	"github.com/go-telegram/bot"
 	"go.uber.org/fx"
-	"go.uber.org/zap"
+
+	l "plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/handler"
 )
 
-func NewTelegramBot(handlers []TelegramHandler, lc fx.Lifecycle, log *zap.SugaredLogger, config *Config) *bot.Bot {
+func NewTelegramBot(handlers []TelegramHandler, lc fx.Lifecycle, config *Config) *bot.Bot {
+	log := l.GetLogger("depend.bot")
 	var botOptions []bot.Option
 	// botOptions = ...
 	b, err := bot.New(config.BotToken, botOptions...)
 	if err != nil {
-		log.Named("depend.bot").Panic(fmt.Sprintf("panic! <%T> %v", err, err))
+		log.Panic(fmt.Sprintf("panic! <%T> %v", err, err))
 	}
 
 	lc.Append(
 		fx.Hook{
 			OnStart: func(ctx context.Context) error {
-				go b.Start(ctx)
+				go b.Start(context.Background())
 
 				for _, h := range handlers {
 					h.Register(b)
@@ -30,7 +32,7 @@ func NewTelegramBot(handlers []TelegramHandler, lc fx.Lifecycle, log *zap.Sugare
 				return nil
 			},
 			OnStop: func(ctx context.Context) error {
-				_, err := b.Close(ctx)
+				_, err := b.Close(context.Background())
 				return err
 			},
 		},

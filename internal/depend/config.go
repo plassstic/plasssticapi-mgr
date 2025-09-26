@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
+	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 )
 
 type Config struct {
@@ -13,11 +13,12 @@ type Config struct {
 	BotToken     string
 }
 
-func NewConfig(log *zap.SugaredLogger) *Config {
-	data := getPostgresData(log)
+func NewConfig() *Config {
+	log := logger.GetLogger("config.NewConfig")
+	data := getPostgresData()
 	botToken := os.Getenv("BOT_TOKEN")
 	if botToken == "" {
-		log.Named("config.NewConfig").Panic("panic! environment variable BOT_TOKEN is unspecified")
+		log.Panic("panic! environment variable BOT_TOKEN is unspecified")
 	}
 	return &Config{
 		PostgresData: data,
@@ -25,10 +26,10 @@ func NewConfig(log *zap.SugaredLogger) *Config {
 	}
 }
 
-func getPostgresData(log *zap.SugaredLogger) string {
-	err := godotenv.Load()
+func getPostgresData() string {
+	log := logger.GetLogger("config.getPostgresData")
 
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Named("config.getPostgresData").Panic(fmt.Sprintf("panic! <%T> %v", err, err))
 	}
 

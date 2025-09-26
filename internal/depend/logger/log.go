@@ -1,16 +1,22 @@
-package depend
+package logger
 
 import (
-	"context"
 	"os"
+	"os/signal"
+	"strings"
+	"sync"
 	"time"
 
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger(lc fx.Lifecycle) *zap.SugaredLogger {
+var (
+	once sync.Once
+	_log *zap.SugaredLogger
+)
+
+func buildSugaredLogger() *zap.SugaredLogger {
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:       "timestamp",
 		LevelKey:      "level",
@@ -33,13 +39,31 @@ func NewLogger(lc fx.Lifecycle) *zap.SugaredLogger {
 
 	logger := zap.New(core, zap.AddStacktrace(zapcore.ErrorLevel))
 
-	lc.Append(
-		fx.Hook{
-			OnStop: func(ctx context.Context) error {
-				return logger.Sync()
-			},
-		},
-	)
+	sigint := make(chan os.Signal)
+	signal.Notify(sigint, os.Interrupt)
+
+	go func() {
+		<-sigint
+		_ = logger.Sync()
+	}()
 
 	return logger.Sugar()
+}
+
+func initSingleton() {
+	once.Do(func() {
+		_log = buildSugaredLogger()
+	})
+}
+
+func GetLogger(name string) *zap.SugaredLogger {
+	initSingleton()
+	logName := "[ " + strings.ReplaceAll(name, ".", " -> ") + " ]"
+	return _log.Named(logName)
+}
+
+func GetRawLogger(name string) *zap.Logger {
+	initSingleton()
+	logName := "[ " + strings.ReplaceAll(name, ".", " -> ") + " ]"
+	return _log.Desugar().Named(logName)
 }
