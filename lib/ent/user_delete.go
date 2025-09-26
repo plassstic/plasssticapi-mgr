@@ -4,13 +4,13 @@ package ent
 
 import (
 	"context"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // UserDelete is the builder for deleting a User entity.

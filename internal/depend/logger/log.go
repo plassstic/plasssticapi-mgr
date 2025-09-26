@@ -34,7 +34,7 @@ func buildSugaredLogger() *zap.SugaredLogger {
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
 		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)),
-		zap.InfoLevel,
+		zap.DebugLevel,
 	)
 
 	logger := zap.New(core, zap.AddStacktrace(zapcore.ErrorLevel))

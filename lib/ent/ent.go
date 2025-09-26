@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 	"reflect"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

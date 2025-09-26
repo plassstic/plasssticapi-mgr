@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -40,6 +40,12 @@ func (_u *UserUpdate) SetNillableBotToken(v *string) *UserUpdate {
 	if v != nil {
 		_u.SetBotToken(*v)
 	}
+	return _u
+}
+
+// ClearBotToken clears the value of the "bot_token" field.
+func (_u *UserUpdate) ClearBotToken() *UserUpdate {
+	_u.mutation.ClearBotToken()
 	return _u
 }
 
@@ -107,6 +113,9 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.BotToken(); ok {
 		_spec.SetField(user.FieldBotToken, field.TypeString, value)
 	}
+	if _u.mutation.BotTokenCleared() {
+		_spec.ClearField(user.FieldBotToken, field.TypeString)
+	}
 	if value, ok := _u.mutation.Editable(); ok {
 		_spec.SetField(user.FieldEditable, field.TypeJSON, value)
 	}
@@ -146,6 +155,12 @@ func (_u *UserUpdateOne) SetNillableBotToken(v *string) *UserUpdateOne {
 	if v != nil {
 		_u.SetBotToken(*v)
 	}
+	return _u
+}
+
+// ClearBotToken clears the value of the "bot_token" field.
+func (_u *UserUpdateOne) ClearBotToken() *UserUpdateOne {
+	_u.mutation.ClearBotToken()
 	return _u
 }
 
@@ -242,6 +257,9 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.BotToken(); ok {
 		_spec.SetField(user.FieldBotToken, field.TypeString, value)
+	}
+	if _u.mutation.BotTokenCleared() {
+		_spec.ClearField(user.FieldBotToken, field.TypeString)
 	}
 	if value, ok := _u.mutation.Editable(); ok {
 		_spec.SetField(user.FieldEditable, field.TypeJSON, value)

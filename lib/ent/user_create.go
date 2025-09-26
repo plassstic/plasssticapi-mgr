@@ -4,13 +4,12 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -23,6 +22,14 @@ type UserCreate struct {
 // SetBotToken sets the "bot_token" field.
 func (_c *UserCreate) SetBotToken(v string) *UserCreate {
 	_c.mutation.SetBotToken(v)
+	return _c
+}
+
+// SetNillableBotToken sets the "bot_token" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBotToken(v *string) *UserCreate {
+	if v != nil {
+		_c.SetBotToken(*v)
+	}
 	return _c
 }
 
@@ -80,9 +87,6 @@ func (_c *UserCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *UserCreate) check() error {
-	if _, ok := _c.mutation.BotToken(); !ok {
-		return &ValidationError{Name: "bot_token", err: errors.New(`ent: missing required field "User.bot_token"`)}
-	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}

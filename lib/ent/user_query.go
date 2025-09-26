@@ -6,14 +6,14 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // UserQuery is the builder for querying User entities.

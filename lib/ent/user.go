@@ -5,12 +5,12 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 // User is the model entity for the User schema.

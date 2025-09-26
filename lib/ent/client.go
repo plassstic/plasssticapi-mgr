@@ -11,11 +11,10 @@ import (
 
 	"plassstic.tech/gopkg/golang-manager/lib/ent/migrate"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 
 	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
 )

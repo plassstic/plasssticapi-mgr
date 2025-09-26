@@ -9,9 +9,8 @@ import (
 	// required by schema hooks.
 	_ "plassstic.tech/gopkg/golang-manager/lib/ent/runtime"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent/migrate"
-
 	"entgo.io/ent/dialect/sql/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/migrate"
 )
 
 type (

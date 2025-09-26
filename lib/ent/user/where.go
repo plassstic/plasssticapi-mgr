@@ -3,9 +3,8 @@
 package user
 
 import (
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-
 	"entgo.io/ent/dialect/sql"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
@@ -111,6 +110,16 @@ func BotTokenHasPrefix(v string) predicate.User {
 // BotTokenHasSuffix applies the HasSuffix predicate on the "bot_token" field.
 func BotTokenHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldBotToken, v))
+}
+
+// BotTokenIsNil applies the IsNil predicate on the "bot_token" field.
+func BotTokenIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBotToken))
+}
+
+// BotTokenNotNil applies the NotNil predicate on the "bot_token" field.
+func BotTokenNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBotToken))
 }
 
 // BotTokenEqualFold applies the EqualFold predicate on the "bot_token" field.

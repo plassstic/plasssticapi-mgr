@@ -13,7 +13,7 @@ import (
 
 func NewEntClient(lc fx.Lifecycle, config *Config) *ent.Client {
 	log := logger.GetLogger("database.NewEntClient")
-	client, err := ent.Open("postgres", config.PostgresData)
+	client, err := ent.Open("postgres", config.PostgresData, ent.Log(logger.GetLogger("ent").Info))
 
 	if err != nil {
 		log.Panic(fmt.Sprintf("panic! <%T> %v", err, err))

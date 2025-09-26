@@ -30,7 +30,8 @@ func (User) Fields() []ent.Field {
 			Positive(),
 		field.
 			String("bot_token").
-			Unique(),
+			Unique().
+			Optional(),
 		field.
 			JSON("editable", Editable{}).
 			Optional(),

@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 const (
@@ -176,9 +176,22 @@ func (m *UserMutation) OldBotToken(ctx context.Context) (v string, err error) {
 	return oldValue.BotToken, nil
 }
 
+// ClearBotToken clears the value of the "bot_token" field.
+func (m *UserMutation) ClearBotToken() {
+	m.bot_token = nil
+	m.clearedFields[user.FieldBotToken] = struct{}{}
+}
+
+// BotTokenCleared returns if the "bot_token" field was cleared in this mutation.
+func (m *UserMutation) BotTokenCleared() bool {
+	_, ok := m.clearedFields[user.FieldBotToken]
+	return ok
+}
+
 // ResetBotToken resets all changes to the "bot_token" field.
 func (m *UserMutation) ResetBotToken() {
 	m.bot_token = nil
+	delete(m.clearedFields, user.FieldBotToken)
 }
 
 // SetEditable sets the "editable" field.
@@ -349,6 +362,9 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(user.FieldBotToken) {
+		fields = append(fields, user.FieldBotToken)
+	}
 	if m.FieldCleared(user.FieldEditable) {
 		fields = append(fields, user.FieldEditable)
 	}
@@ -366,6 +382,9 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
+	case user.FieldBotToken:
+		m.ClearBotToken()
+		return nil
 	case user.FieldEditable:
 		m.ClearEditable()
 		return nil
