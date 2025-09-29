@@ -22,11 +22,12 @@ require (
 	github.com/hashicorp/hcl/v2 v2.18.1 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	github.com/samber/lo v1.51.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/mod v0.27.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 )

@@ -10,8 +10,10 @@ import (
 	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 )
 
+var Domain string
+
 func makeRequest(method string, path string) (*http.Response, error) {
-	uri, err := url.Parse("https://api.plassstic.tech" + path)
+	uri, err := url.Parse(Domain + path)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +35,7 @@ func makeRequest(method string, path string) (*http.Response, error) {
 
 func GetMe(userID int64) (map[string]interface{}, error) {
 	resp, err := makeRequest("GET", fmt.Sprintf("/public/spotify/api/%v/me", userID))
-	logger.GetLogger("123").Infof("%#v", resp)
+	logger.GetLogger("me").Infof("%#v", resp)
 	if err != nil {
 		return nil, err
 	}
@@ -54,4 +56,29 @@ func GetMe(userID int64) (map[string]interface{}, error) {
 	}
 
 	return r, nil
+}
+
+func GetPlayer(userID int64) (*PlayerSI, error) {
+	resp, err := makeRequest("GET", fmt.Sprintf("/public/spotify/api/%v/me/player", userID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	var r PlayerSI
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
 }

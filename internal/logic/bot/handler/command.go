@@ -7,7 +7,9 @@ import (
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/api"
+	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/utils"
+	bot "plassstic.tech/gopkg/golang-manager/internal/logic/thread"
 	. "plassstic.tech/gopkg/golang-manager/internal/service"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
 )
@@ -41,19 +43,19 @@ func (c *cmd) handleStart(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 		return
 	}
 
-	result, err := (&UserService{}).
+	user, err := (&UserService{}).
 		With(c.client).
 		Ensure(int(info.User.ID)).
 		One()
 
-	var kb *tgm.InlineKeyboardMarkup
+	kb := NilMarkup
 
 	if err != nil {
-		text = "К сожалению, произошла ошибка при создании аккаунта"
+		text = fmt.Sprintf("Произошла ошибка при создании аккаунта: %v", err)
 	} else {
 		me, err := GetMe(info.User.ID)
 		if err != nil {
-			text = fmt.Sprintf("К сожалению, произошла ошибка при запросе к API %v", err)
+			text = fmt.Sprintf("Произошла ошибка при запросе к API: %v\n\nЕсли вы еще не связывали свой аккаунт Telegram с Spotify, это можно сделать здесь: https://api.plassstic.tech/public/auth", err)
 		} else {
 			kb = &tgm.InlineKeyboardMarkup{
 				InlineKeyboard: [][]tgm.InlineKeyboardButton{
@@ -63,8 +65,12 @@ func (c *cmd) handleStart(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 				},
 			}
 			text = "Привет, %s (TG_ID: %d, SP_ID: %s) 👋\n\n" +
-				"В этом боте ты сможешь подключить в свой канал автообновляющийся статус Spotify :0"
-			text = fmt.Sprintf(text, info.User.Handle, result.ID, me["id"].(string))
+				"В этом боте ты сможешь подключить в свой канал автообновляющийся статус Spotify :)"
+
+			if _, ok := bot.Repo.D[int(info.User.ID)]; ok {
+				text += fmt.Sprintf("\n\n✅ Активен поток для бота @%s", user.Bot.Handle)
+			}
+			text = fmt.Sprintf(text, info.User.Handle, user.ID, me["id"])
 		}
 	}
 

@@ -25,15 +25,26 @@ func (srv *UserService) With(client *ent.Client) *UserService {
 }
 
 func (srv *UserService) Get(userId int) *UserService {
-	srv.result = srv.repo.
+	srv.result = srv.
+		repo.
 		GetByID(ctx, userId).
 		Result()
 
 	return srv
 }
 
+func (srv *UserService) GetAllNonNil() *UserService {
+	srv.result = srv.
+		repo.
+		GetAllNonNil(ctx).
+		Result()
+
+	return srv
+}
+
 func (srv *UserService) Ensure(userId int) *UserService {
-	srv.result = srv.repo.
+	srv.result = srv.
+		repo.
 		GetByID(ctx, userId).
 		ClearIfErrAs(&ent.NotFoundError{}).
 		Create(ctx, userId).
@@ -43,7 +54,8 @@ func (srv *UserService) Ensure(userId int) *UserService {
 }
 
 func (srv *UserService) SetBoth(userId int64, bot schema.Bot, editable schema.Editable) *UserService {
-	srv.result = srv.repo.
+	srv.result = srv.
+		repo.
 		SetBoth(ctx, userId, bot, editable).
 		Result()
 
@@ -55,6 +67,19 @@ func (srv *UserService) One() (*ent.User, error) {
 	case *ent.User:
 		_ = srv.tx.Commit()
 		return srv.result.(*ent.User), nil
+	case error:
+		_ = srv.tx.Rollback()
+		return nil, srv.result.(error)
+	default:
+		return nil, fmt.Errorf("result is empty")
+	}
+}
+
+func (srv *UserService) Many() ([]*ent.User, error) {
+	switch srv.result.(type) {
+	case []*ent.User:
+		_ = srv.tx.Commit()
+		return srv.result.([]*ent.User), nil
 	case error:
 		_ = srv.tx.Rollback()
 		return nil, srv.result.(error)

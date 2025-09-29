@@ -6,7 +6,8 @@ import (
 
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
-	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
+	. "plassstic.tech/gopkg/golang-manager/internal/depend/logger"
+	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/utils"
 	. "plassstic.tech/gopkg/golang-manager/internal/service"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
@@ -52,7 +53,7 @@ func (r *fsmRouter) handle(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	if info == nil {
 		return
 	}
-	log := logger.GetLogger("FSM -> routing")
+	log := GetLogger("FSM -> routing")
 
 	switch st, _ := GlobalFSM.Current(info.User.ID); st {
 	case fsUnknown:
@@ -76,14 +77,14 @@ func (r *fsmRouter) validateProfNewToken(ctx context.Context, b *tg.Bot, u *tgm.
 	re, err := regexp.Compile(`[0-9]+:[A-Za-z_\-0-9]{35}`)
 
 	if err != nil || !re.MatchString(token) {
-		info.Respond(ctx, b, "Неверный токен; попробуйте еще раз.", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Неверный токен; попробуйте еще раз.", NilMarkup)
 		return
 	}
 
 	_, err = tg.New(token)
 
 	if err != nil {
-		info.Respond(ctx, b, "Неверный токен; попробуйте еще раз.", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Неверный токен; попробуйте еще раз.", NilMarkup)
 		return
 	}
 
@@ -95,14 +96,14 @@ func (r *fsmRouter) validateProfNewToken(ctx context.Context, b *tg.Bot, u *tgm.
 func (r *fsmRouter) validateProfNewMessage(ctx context.Context, b *tg.Bot, u *tgm.Update, info *UpdateInfo) {
 	fo := u.Message.ForwardOrigin
 	if fo == nil || fo.Type != tgm.MessageOriginTypeChannel {
-		info.Respond(ctx, b, "Сообщение не является пересланным из канала; попробуйте еще раз.", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Сообщение не является пересланным из канала; попробуйте еще раз.", NilMarkup)
 		return
 	}
 
 	token, err := GlobalFSM.Get(info.User.ID, "token")
 
 	if err != nil {
-		info.Respond(ctx, b, "Произошла ошибка, токен не найден в вашем состоянии\n\nВведите токен еще раз:", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Произошла ошибка, токен не найден в вашем состоянии\n\nВведите токен еще раз:", NilMarkup)
 		_ = GlobalFSM.Transition(ctx, info.User.ID, fsProfNewToken, b, u)
 		return
 	}
@@ -110,7 +111,7 @@ func (r *fsmRouter) validateProfNewMessage(ctx context.Context, b *tg.Bot, u *tg
 	tb, err := tg.New(token)
 
 	if err != nil {
-		info.Respond(ctx, b, "Неверный токен\n\nВведите токен еще раз:", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Неверный токен\n\nВведите токен еще раз:", NilMarkup)
 		_ = GlobalFSM.Transition(ctx, info.User.ID, fsProfNewToken, b, u)
 		return
 	}
@@ -124,13 +125,13 @@ func (r *fsmRouter) validateProfNewMessage(ctx context.Context, b *tg.Bot, u *tg
 	if err != nil {
 		info.Respond(ctx, b, "Не удалось воспроизвести тестовое изменение сообщения.\n\n"+
 			"Убедитесь, что менеджеру выданы все права администратора и перешлите сообщение еще раз",
-			&tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+			NilMarkup)
 		return
 	}
 
 	editable := schema.Editable{
-		Id:     int(fo.MessageOriginChannel.Chat.ID),
-		ChatId: fo.MessageOriginChannel.MessageID,
+		Id:     fo.MessageOriginChannel.MessageID,
+		ChatId: int(fo.MessageOriginChannel.Chat.ID),
 	}
 
 	tbInfo, _ := tb.GetMe(ctx)
@@ -145,12 +146,12 @@ func (r *fsmRouter) validateProfNewMessage(ctx context.Context, b *tg.Bot, u *tg
 		One()
 
 	if err != nil {
-		info.Respond(ctx, b, "Не удалось сохранить изменения.\n\nПопробуйте еще раз", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+		info.Respond(ctx, b, "Не удалось сохранить изменения.\n\nПопробуйте еще раз", NilMarkup)
 		_ = GlobalFSM.Transition(ctx, info.User.ID, fsProfNewToken, b, u)
 		return
 	}
 
-	info.Respond(ctx, b, "OK", &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+	info.Respond(ctx, b, "OK", NilMarkup)
 	_ = GlobalFSM.Reset(info.User.ID)
 	return
 }

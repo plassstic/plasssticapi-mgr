@@ -6,6 +6,7 @@ import (
 
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
+	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/utils"
 	"plassstic.tech/gopkg/golang-manager/internal/service"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
@@ -68,8 +69,7 @@ func (p *profile) handleMenu(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 		kb = &tgm.InlineKeyboardMarkup{
 			InlineKeyboard: [][]tgm.InlineKeyboardButton{
 				{
-					{Text: "🤖 Сменить бота", CallbackData: "add_bot"},
-					{Text: "💬 Изменить сообщение", CallbackData: "change_message"},
+					{Text: "🤖 Очистить", CallbackData: "clear"},
 				},
 				{
 					{Text: "🔙 Назад", CallbackData: "start_menu"},
@@ -90,17 +90,27 @@ func (p *profile) handleToken(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 		return
 	}
 
-	text = "Введите токен бота:"
+	text = "Введите BOT_TOKEN для бота с назначенными правами администратора в целевом канале:\n\n<i>Подсказка: Создать бота можно через @botfather, отправив <b>ему</b> команду <code>/newbot</code></i>"
 
 	_ = GlobalFSM.Transition(ctx, info.User.ID, fsProfNewToken, b, u)
 
-	info.Respond(ctx, b, text, &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+	info.Respond(ctx, b, text, NilMarkup)
 }
 
 func (p *profile) handleMessage(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	var text string
 
-	text = "Перешлите сообщение из канала, где бот назначен администратором с правом управлять сообщениями, которое вы хотите выделить под Spotify:"
+	text = "Перешлите сообщение из канала с ботом-администратором, которое вы хотите выделить под Spotify:"
 
-	GetUInfo(u).Respond(ctx, b, text, &tgm.InlineKeyboardMarkup{InlineKeyboard: [][]tgm.InlineKeyboardButton{}})
+	GetUInfo(u).Respond(ctx, b, text, NilMarkup)
+}
+
+func (p *profile) handleClear(ctx context.Context, b *tg.Bot, u *tgm.Update) {
+	var text string
+
+	info := GetUInfo(u)
+
+	text = "Перешлите сообщение из канала с ботом-администратором, которое вы хотите выделить под Spotify:"
+
+	info.Respond(ctx, b, text, NilMarkup)
 }

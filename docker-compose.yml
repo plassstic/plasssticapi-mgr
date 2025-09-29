@@ -1,0 +1,16 @@
+name: go-spotify-presence
+networks:
+  main:
+    name: vps-develop
+    external: true
+
+services:
+  mgr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - main

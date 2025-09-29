@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 
-	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
+	"entgo.io/ent/dialect/sql"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
 	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
 )
 
 type UserRepo struct {
@@ -19,7 +21,6 @@ func (repo *UserRepo) With(tx *ent.Tx) *UserRepo {
 	return repo
 }
 func (repo *UserRepo) SetBoth(ctx context.Context, userId int64, bot schema.Bot, editable schema.Editable) *UserRepo {
-	logger.GetLogger("123").Infof("%#v", repo)
 
 	if repo.resultNotNil() {
 		return repo
@@ -34,6 +35,30 @@ func (repo *UserRepo) SetBoth(ctx context.Context, userId int64, bot schema.Bot,
 		UpdateOneID(int(userId)).
 		SetBot(bot).
 		SetEditable(editable).
+		Save(ctx)
+
+	if e != nil {
+		repo.result = e
+	}
+
+	return repo
+}
+
+func (repo *UserRepo) NilBoth(ctx context.Context, userId int64) *UserRepo {
+
+	if repo.resultNotNil() {
+		return repo
+	}
+
+	var e error
+
+	repo.result, e = repo.
+		tx.
+		Client().
+		User.
+		UpdateOneID(int(userId)).
+		SetBot(schema.Bot{}).
+		SetEditable(schema.Editable{}).
 		Save(ctx)
 
 	if e != nil {
@@ -143,6 +168,30 @@ func (repo *UserRepo) compareResultErrIs(err error) bool {
 		return errors.Is(repo.result.(error), err)
 	}
 	return false
+}
+
+func hasBot() predicate.User {
+	return sql.AndPredicates(sql.FieldNotNull(user.FieldBot), sql.FieldNotNull(user.FieldEditable))
+}
+func (repo *UserRepo) GetAllNonNil(ctx context.Context) *UserRepo {
+	if repo.resultNotNil() {
+		return repo
+	}
+
+	var e error
+
+	repo.result, e = repo.
+		tx.
+		Client().
+		User.Query().Where(hasBot()).All(ctx)
+
+	//logger.GetLogger("repo").Debugf("Got %v (err %v)", repo.result, e)
+
+	if e != nil {
+		repo.result = e
+	}
+
+	return repo
 }
 
 func (repo *UserRepo) Result() interface{} {
