@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
 )
 
 type UserRepo struct {
@@ -16,7 +18,30 @@ func (repo *UserRepo) With(tx *ent.Tx) *UserRepo {
 	repo.tx = tx
 	return repo
 }
+func (repo *UserRepo) SetBoth(ctx context.Context, userId int64, bot schema.Bot, editable schema.Editable) *UserRepo {
+	logger.GetLogger("123").Infof("%#v", repo)
 
+	if repo.resultNotNil() {
+		return repo
+	}
+
+	var e error
+
+	repo.result, e = repo.
+		tx.
+		Client().
+		User.
+		UpdateOneID(int(userId)).
+		SetBot(bot).
+		SetEditable(editable).
+		Save(ctx)
+
+	if e != nil {
+		repo.result = e
+	}
+
+	return repo
+}
 func (repo *UserRepo) GetByID(ctx context.Context, userId int) *UserRepo {
 	if repo.resultNotNil() {
 		return repo

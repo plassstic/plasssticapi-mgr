@@ -263,12 +263,12 @@ func (_q *UserQuery) Clone() *UserQuery {
 // Example:
 //
 //	var v []struct {
-//		BotToken string `json:"bot_token,omitempty"`
+//		Bot schema.Bot `json:"bot,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.User.Query().
-//		GroupBy(user.FieldBotToken).
+//		GroupBy(user.FieldBot).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *UserQuery) GroupBy(field string, fields ...string) *UserGroupBy {
@@ -286,11 +286,11 @@ func (_q *UserQuery) GroupBy(field string, fields ...string) *UserGroupBy {
 // Example:
 //
 //	var v []struct {
-//		BotToken string `json:"bot_token,omitempty"`
+//		Bot schema.Bot `json:"bot,omitempty"`
 //	}
 //
 //	client.User.Query().
-//		Select(user.FieldBotToken).
+//		Select(user.FieldBot).
 //		Scan(ctx, &v)
 func (_q *UserQuery) Select(fields ...string) *UserSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

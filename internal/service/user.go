@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	. "plassstic.tech/gopkg/golang-manager/internal/repository"
 	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
 )
 
 var ctx = context.Background()
@@ -40,15 +42,23 @@ func (srv *UserService) Ensure(userId int) *UserService {
 	return srv
 }
 
-func (srv *UserService) Fin() interface{} {
+func (srv *UserService) SetBoth(userId int64, bot schema.Bot, editable schema.Editable) *UserService {
+	srv.result = srv.repo.
+		SetBoth(ctx, userId, bot, editable).
+		Result()
+
+	return srv
+}
+
+func (srv *UserService) One() (*ent.User, error) {
 	switch srv.result.(type) {
+	case *ent.User:
+		_ = srv.tx.Commit()
+		return srv.result.(*ent.User), nil
 	case error:
 		_ = srv.tx.Rollback()
+		return nil, srv.result.(error)
 	default:
-		_ = srv.tx.Commit()
+		return nil, fmt.Errorf("result is empty")
 	}
-
-	//logger.GetLogger("srv").Debugf("Return %#v", srv.result)
-
-	return srv.result
 }

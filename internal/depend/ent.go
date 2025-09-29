@@ -16,7 +16,7 @@ func NewEntClient(lc fx.Lifecycle, config *Config) *ent.Client {
 	client, err := ent.Open("postgres", config.PostgresData, ent.Log(logger.GetLogger("ent").Info))
 
 	if err != nil {
-		log.Panic(fmt.Sprintf("panic! <%T> %v", err, err))
+		log.Panic(fmt.Sprintf("panic! <%Type> %v", err, err))
 	}
 
 	lc.Append(fx.Hook{

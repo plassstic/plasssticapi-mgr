@@ -4,30 +4,29 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-telegram/bot"
+	tg "github.com/go-telegram/bot"
 	"go.uber.org/fx"
-
 	l "plassstic.tech/gopkg/golang-manager/internal/depend/logger"
 	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/handler"
+	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/middleware"
+	"plassstic.tech/gopkg/golang-manager/lib/ent"
 )
 
-func NewTelegramBot(handlers []TelegramHandler, lc fx.Lifecycle, config *Config) *bot.Bot {
+func NewTelegramBot(lc fx.Lifecycle, config *Config, c *ent.Client) *tg.Bot {
 	log := l.GetLogger("depend.bot")
-	var botOptions []bot.Option
-	// botOptions = ...
-	b, err := bot.New(config.BotToken, botOptions...)
+
+	botOptions := []tg.Option{tg.WithMiddlewares(Middlewares()...), tg.WithDebug(), tg.WithDefaultHandler(FSM(c))}
+	b, err := tg.New(config.BotToken, botOptions...)
 	if err != nil {
-		log.Panic(fmt.Sprintf("panic! <%T> %v", err, err))
+		log.Panic(fmt.Sprintf("panic! <%Type> %v", err, err))
 	}
 
 	lc.Append(
 		fx.Hook{
 			OnStart: func(ctx context.Context) error {
-				go b.Start(context.Background())
+				Register(b, c)
 
-				for _, h := range handlers {
-					h.Register(b)
-				}
+				go b.Start(context.Background())
 
 				return nil
 			},

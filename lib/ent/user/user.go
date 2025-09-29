@@ -4,6 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
 )
 
 const (
@@ -11,8 +12,8 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldBotToken holds the string denoting the bot_token field in the database.
-	FieldBotToken = "bot_token"
+	// FieldBot holds the string denoting the bot field in the database.
+	FieldBot = "bot"
 	// FieldEditable holds the string denoting the editable field in the database.
 	FieldEditable = "editable"
 	// Table holds the table name of the user in the database.
@@ -22,7 +23,7 @@ const (
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
-	FieldBotToken,
+	FieldBot,
 	FieldEditable,
 }
 
@@ -37,6 +38,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultBot holds the default value on creation for the "bot" field.
+	DefaultBot schema.Bot
+	// DefaultEditable holds the default value on creation for the "editable" field.
+	DefaultEditable schema.Editable
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int) error
 )
@@ -47,9 +52,4 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
-}
-
-// ByBotToken orders the results by the bot_token field.
-func ByBotToken(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBotToken, opts...).ToFunc()
 }

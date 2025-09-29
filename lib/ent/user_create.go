@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -19,16 +20,16 @@ type UserCreate struct {
 	hooks    []Hook
 }
 
-// SetBotToken sets the "bot_token" field.
-func (_c *UserCreate) SetBotToken(v string) *UserCreate {
-	_c.mutation.SetBotToken(v)
+// SetBot sets the "bot" field.
+func (_c *UserCreate) SetBot(v schema.Bot) *UserCreate {
+	_c.mutation.SetBot(v)
 	return _c
 }
 
-// SetNillableBotToken sets the "bot_token" field if the given value is not nil.
-func (_c *UserCreate) SetNillableBotToken(v *string) *UserCreate {
+// SetNillableBot sets the "bot" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBot(v *schema.Bot) *UserCreate {
 	if v != nil {
-		_c.SetBotToken(*v)
+		_c.SetBot(*v)
 	}
 	return _c
 }
@@ -60,6 +61,7 @@ func (_c *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -85,8 +87,26 @@ func (_c *UserCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *UserCreate) defaults() {
+	if _, ok := _c.mutation.Bot(); !ok {
+		v := user.DefaultBot
+		_c.mutation.SetBot(v)
+	}
+	if _, ok := _c.mutation.Editable(); !ok {
+		v := user.DefaultEditable
+		_c.mutation.SetEditable(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *UserCreate) check() error {
+	if _, ok := _c.mutation.Bot(); !ok {
+		return &ValidationError{Name: "bot", err: errors.New(`ent: missing required field "User.bot"`)}
+	}
+	if _, ok := _c.mutation.Editable(); !ok {
+		return &ValidationError{Name: "editable", err: errors.New(`ent: missing required field "User.editable"`)}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
@@ -125,9 +145,9 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := _c.mutation.BotToken(); ok {
-		_spec.SetField(user.FieldBotToken, field.TypeString, value)
-		_node.BotToken = value
+	if value, ok := _c.mutation.Bot(); ok {
+		_spec.SetField(user.FieldBot, field.TypeJSON, value)
+		_node.Bot = value
 	}
 	if value, ok := _c.mutation.Editable(); ok {
 		_spec.SetField(user.FieldEditable, field.TypeJSON, value)
@@ -154,6 +174,7 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
 				if !ok {

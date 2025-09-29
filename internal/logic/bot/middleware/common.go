@@ -34,8 +34,8 @@ func loggingMiddleware(next bot.HandlerFunc) bot.HandlerFunc {
 	}
 }
 
-func Middlewares() []func(bot.HandlerFunc) bot.HandlerFunc {
-	return []func(bot.HandlerFunc) bot.HandlerFunc{
+func Middlewares() []bot.Middleware {
+	return []bot.Middleware{
 		loggingMiddleware,
 	}
 }

@@ -7,6 +7,11 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+type Bot struct {
+	Token  string `json:"token"`
+	Handle string `json:"handle"`
+}
+
 type Editable struct {
 	Id     int `json:"id"`
 	ChatId int `json:"chat_id"`
@@ -29,12 +34,11 @@ func (User) Fields() []ent.Field {
 			Immutable().
 			Positive(),
 		field.
-			String("bot_token").
-			Unique().
-			Optional(),
+			JSON("bot", Bot{}).
+			Default(Bot{}),
 		field.
 			JSON("editable", Editable{}).
-			Optional(),
+			Default(Editable{}),
 	}
 }
 

@@ -33,7 +33,7 @@ type UserMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	bot_token     *string
+	bot           *schema.Bot
 	editable      *schema.Editable
 	clearedFields map[string]struct{}
 	done          bool
@@ -145,53 +145,40 @@ func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetBotToken sets the "bot_token" field.
-func (m *UserMutation) SetBotToken(s string) {
-	m.bot_token = &s
+// SetBot sets the "bot" field.
+func (m *UserMutation) SetBot(s schema.Bot) {
+	m.bot = &s
 }
 
-// BotToken returns the value of the "bot_token" field in the mutation.
-func (m *UserMutation) BotToken() (r string, exists bool) {
-	v := m.bot_token
+// Bot returns the value of the "bot" field in the mutation.
+func (m *UserMutation) Bot() (r schema.Bot, exists bool) {
+	v := m.bot
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBotToken returns the old "bot_token" field's value of the User entity.
+// OldBot returns the old "bot" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBotToken(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldBot(ctx context.Context) (v schema.Bot, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBotToken is only allowed on UpdateOne operations")
+		return v, errors.New("OldBot is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBotToken requires an ID field in the mutation")
+		return v, errors.New("OldBot requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBotToken: %w", err)
+		return v, fmt.Errorf("querying old value for OldBot: %w", err)
 	}
-	return oldValue.BotToken, nil
+	return oldValue.Bot, nil
 }
 
-// ClearBotToken clears the value of the "bot_token" field.
-func (m *UserMutation) ClearBotToken() {
-	m.bot_token = nil
-	m.clearedFields[user.FieldBotToken] = struct{}{}
-}
-
-// BotTokenCleared returns if the "bot_token" field was cleared in this mutation.
-func (m *UserMutation) BotTokenCleared() bool {
-	_, ok := m.clearedFields[user.FieldBotToken]
-	return ok
-}
-
-// ResetBotToken resets all changes to the "bot_token" field.
-func (m *UserMutation) ResetBotToken() {
-	m.bot_token = nil
-	delete(m.clearedFields, user.FieldBotToken)
+// ResetBot resets all changes to the "bot" field.
+func (m *UserMutation) ResetBot() {
+	m.bot = nil
 }
 
 // SetEditable sets the "editable" field.
@@ -225,22 +212,9 @@ func (m *UserMutation) OldEditable(ctx context.Context) (v schema.Editable, err 
 	return oldValue.Editable, nil
 }
 
-// ClearEditable clears the value of the "editable" field.
-func (m *UserMutation) ClearEditable() {
-	m.editable = nil
-	m.clearedFields[user.FieldEditable] = struct{}{}
-}
-
-// EditableCleared returns if the "editable" field was cleared in this mutation.
-func (m *UserMutation) EditableCleared() bool {
-	_, ok := m.clearedFields[user.FieldEditable]
-	return ok
-}
-
 // ResetEditable resets all changes to the "editable" field.
 func (m *UserMutation) ResetEditable() {
 	m.editable = nil
-	delete(m.clearedFields, user.FieldEditable)
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -278,8 +252,8 @@ func (m *UserMutation) Type() string {
 // AddedFields().
 func (m *UserMutation) Fields() []string {
 	fields := make([]string, 0, 2)
-	if m.bot_token != nil {
-		fields = append(fields, user.FieldBotToken)
+	if m.bot != nil {
+		fields = append(fields, user.FieldBot)
 	}
 	if m.editable != nil {
 		fields = append(fields, user.FieldEditable)
@@ -292,8 +266,8 @@ func (m *UserMutation) Fields() []string {
 // schema.
 func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldBotToken:
-		return m.BotToken()
+	case user.FieldBot:
+		return m.Bot()
 	case user.FieldEditable:
 		return m.Editable()
 	}
@@ -305,8 +279,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case user.FieldBotToken:
-		return m.OldBotToken(ctx)
+	case user.FieldBot:
+		return m.OldBot(ctx)
 	case user.FieldEditable:
 		return m.OldEditable(ctx)
 	}
@@ -318,12 +292,12 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *UserMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldBotToken:
-		v, ok := value.(string)
+	case user.FieldBot:
+		v, ok := value.(schema.Bot)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBotToken(v)
+		m.SetBot(v)
 		return nil
 	case user.FieldEditable:
 		v, ok := value.(schema.Editable)
@@ -361,14 +335,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(user.FieldBotToken) {
-		fields = append(fields, user.FieldBotToken)
-	}
-	if m.FieldCleared(user.FieldEditable) {
-		fields = append(fields, user.FieldEditable)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -381,14 +348,6 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
-	switch name {
-	case user.FieldBotToken:
-		m.ClearBotToken()
-		return nil
-	case user.FieldEditable:
-		m.ClearEditable()
-		return nil
-	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -396,8 +355,8 @@ func (m *UserMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *UserMutation) ResetField(name string) error {
 	switch name {
-	case user.FieldBotToken:
-		m.ResetBotToken()
+	case user.FieldBot:
+		m.ResetBot()
 		return nil
 	case user.FieldEditable:
 		m.ResetEditable()

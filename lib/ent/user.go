@@ -18,8 +18,8 @@ type User struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// BotToken holds the value of the "bot_token" field.
-	BotToken string `json:"bot_token,omitempty"`
+	// Bot holds the value of the "bot" field.
+	Bot schema.Bot `json:"bot,omitempty"`
 	// Editable holds the value of the "editable" field.
 	Editable     schema.Editable `json:"editable,omitempty"`
 	selectValues sql.SelectValues
@@ -30,12 +30,10 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldEditable:
+		case user.FieldBot, user.FieldEditable:
 			values[i] = new([]byte)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldBotToken:
-			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -57,11 +55,13 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
-		case user.FieldBotToken:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field bot_token", values[i])
-			} else if value.Valid {
-				_m.BotToken = value.String
+		case user.FieldBot:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field bot", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Bot); err != nil {
+					return fmt.Errorf("unmarshal field bot: %w", err)
+				}
 			}
 		case user.FieldEditable:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -107,8 +107,8 @@ func (_m *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("bot_token=")
-	builder.WriteString(_m.BotToken)
+	builder.WriteString("bot=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Bot))
 	builder.WriteString(", ")
 	builder.WriteString("editable=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Editable))

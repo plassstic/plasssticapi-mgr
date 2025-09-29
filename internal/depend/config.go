@@ -30,7 +30,7 @@ func getPostgresData() string {
 	log := logger.GetLogger("config.getPostgresData")
 
 	if err := godotenv.Load(); err != nil {
-		log.Named("config.getPostgresData").Panic(fmt.Sprintf("panic! <%T> %v", err, err))
+		log.Named("config.getPostgresData").Panic(fmt.Sprintf("panic! <%Type> %v", err, err))
 	}
 
 	url := fmt.Sprintf(

@@ -13,6 +13,14 @@ import (
 func init() {
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescBot is the schema descriptor for bot field.
+	userDescBot := userFields[1].Descriptor()
+	// user.DefaultBot holds the default value on creation for the bot field.
+	user.DefaultBot = userDescBot.Default.(schema.Bot)
+	// userDescEditable is the schema descriptor for editable field.
+	userDescEditable := userFields[2].Descriptor()
+	// user.DefaultEditable holds the default value on creation for the editable field.
+	user.DefaultEditable = userDescEditable.Default.(schema.Editable)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

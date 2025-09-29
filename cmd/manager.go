@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/go-telegram/bot"
+	tg "github.com/go-telegram/bot"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	. "plassstic.tech/gopkg/golang-manager/internal/depend"
 	l "plassstic.tech/gopkg/golang-manager/internal/depend/logger"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
 )
 
 func main() {
@@ -16,11 +15,9 @@ func main() {
 		fx.Provide(
 			NewConfig,
 			NewEntClient,
-			fx.Annotate(NewTelegramBot, fx.ParamTags(`group:"handlers"`)),
+			NewTelegramBot,
 		),
 
-		Handlers(),
-
-		fx.Invoke(func(*bot.Bot) {}),
+		fx.Invoke(func(*tg.Bot) {}),
 	).Run()
 }

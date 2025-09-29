@@ -29,23 +29,17 @@ func (_u *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return _u
 }
 
-// SetBotToken sets the "bot_token" field.
-func (_u *UserUpdate) SetBotToken(v string) *UserUpdate {
-	_u.mutation.SetBotToken(v)
+// SetBot sets the "bot" field.
+func (_u *UserUpdate) SetBot(v schema.Bot) *UserUpdate {
+	_u.mutation.SetBot(v)
 	return _u
 }
 
-// SetNillableBotToken sets the "bot_token" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableBotToken(v *string) *UserUpdate {
+// SetNillableBot sets the "bot" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableBot(v *schema.Bot) *UserUpdate {
 	if v != nil {
-		_u.SetBotToken(*v)
+		_u.SetBot(*v)
 	}
-	return _u
-}
-
-// ClearBotToken clears the value of the "bot_token" field.
-func (_u *UserUpdate) ClearBotToken() *UserUpdate {
-	_u.mutation.ClearBotToken()
 	return _u
 }
 
@@ -60,12 +54,6 @@ func (_u *UserUpdate) SetNillableEditable(v *schema.Editable) *UserUpdate {
 	if v != nil {
 		_u.SetEditable(*v)
 	}
-	return _u
-}
-
-// ClearEditable clears the value of the "editable" field.
-func (_u *UserUpdate) ClearEditable() *UserUpdate {
-	_u.mutation.ClearEditable()
 	return _u
 }
 
@@ -110,17 +98,11 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.BotToken(); ok {
-		_spec.SetField(user.FieldBotToken, field.TypeString, value)
-	}
-	if _u.mutation.BotTokenCleared() {
-		_spec.ClearField(user.FieldBotToken, field.TypeString)
+	if value, ok := _u.mutation.Bot(); ok {
+		_spec.SetField(user.FieldBot, field.TypeJSON, value)
 	}
 	if value, ok := _u.mutation.Editable(); ok {
 		_spec.SetField(user.FieldEditable, field.TypeJSON, value)
-	}
-	if _u.mutation.EditableCleared() {
-		_spec.ClearField(user.FieldEditable, field.TypeJSON)
 	}
 	_spec.Node.Schema = _u.schemaConfig.User
 	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)
@@ -144,23 +126,17 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
-// SetBotToken sets the "bot_token" field.
-func (_u *UserUpdateOne) SetBotToken(v string) *UserUpdateOne {
-	_u.mutation.SetBotToken(v)
+// SetBot sets the "bot" field.
+func (_u *UserUpdateOne) SetBot(v schema.Bot) *UserUpdateOne {
+	_u.mutation.SetBot(v)
 	return _u
 }
 
-// SetNillableBotToken sets the "bot_token" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableBotToken(v *string) *UserUpdateOne {
+// SetNillableBot sets the "bot" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableBot(v *schema.Bot) *UserUpdateOne {
 	if v != nil {
-		_u.SetBotToken(*v)
+		_u.SetBot(*v)
 	}
-	return _u
-}
-
-// ClearBotToken clears the value of the "bot_token" field.
-func (_u *UserUpdateOne) ClearBotToken() *UserUpdateOne {
-	_u.mutation.ClearBotToken()
 	return _u
 }
 
@@ -175,12 +151,6 @@ func (_u *UserUpdateOne) SetNillableEditable(v *schema.Editable) *UserUpdateOne 
 	if v != nil {
 		_u.SetEditable(*v)
 	}
-	return _u
-}
-
-// ClearEditable clears the value of the "editable" field.
-func (_u *UserUpdateOne) ClearEditable() *UserUpdateOne {
-	_u.mutation.ClearEditable()
 	return _u
 }
 
@@ -255,17 +225,11 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.BotToken(); ok {
-		_spec.SetField(user.FieldBotToken, field.TypeString, value)
-	}
-	if _u.mutation.BotTokenCleared() {
-		_spec.ClearField(user.FieldBotToken, field.TypeString)
+	if value, ok := _u.mutation.Bot(); ok {
+		_spec.SetField(user.FieldBot, field.TypeJSON, value)
 	}
 	if value, ok := _u.mutation.Editable(); ok {
 		_spec.SetField(user.FieldEditable, field.TypeJSON, value)
-	}
-	if _u.mutation.EditableCleared() {
-		_spec.ClearField(user.FieldEditable, field.TypeJSON)
 	}
 	_spec.Node.Schema = _u.schemaConfig.User
 	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)
