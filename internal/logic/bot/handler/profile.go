@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
@@ -63,7 +64,7 @@ func (p *profile) handleMenu(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 			},
 		}
 	} else {
-		text += "\n\n" + "К вашему аккаунту подключен бот @%s"
+		text += "\n\n" + fmt.Sprintf("К вашему аккаунту подключен бот @%s", user.Bot.Handle)
 		kb = &tgm.InlineKeyboardMarkup{
 			InlineKeyboard: [][]tgm.InlineKeyboardButton{
 				{
@@ -75,7 +76,7 @@ func (p *profile) handleMenu(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 				},
 			},
 		}
-	}
+	} // TODO(plassstic): Вынести клавиатуры в отд утилиту
 
 	info.Respond(ctx, b, text, kb)
 }
