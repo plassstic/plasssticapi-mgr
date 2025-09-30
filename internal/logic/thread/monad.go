@@ -37,7 +37,7 @@ func gr(token string, uid int, e schema.Editable, closeChan <-chan struct{}) {
 		return
 	}
 	var lastHash string
-	var kEq int
+	var backoffFactor int
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 	for {
@@ -55,22 +55,30 @@ func gr(token string, uid int, e schema.Editable, closeChan <-chan struct{}) {
 			}
 
 			if pl == nil {
-				kEq++
-				log.Infof("204, sleeping %v secs", 5*kEq)
-				time.Sleep(time.Duration(5*kEq) * time.Second)
+				backoffFactor++
+
+				delay := min(5*backoffFactor, 120)
+				log.Infof("204 No Content, player is inactive, delay %vs", delay)
+				time.Sleep(time.Duration(delay) * time.Second)
+
 				continue
+			} else {
+				backoffFactor = 0
 			}
 
 			text := utils.GetFormattedPlayer(pl)
-
 			hash := fmt.Sprintf("%x", sha3.Sum256([]byte(text)))
 
 			if hash == lastHash {
-				kEq++
-				log.Infof("same payload, sleeping %v secs", 5*kEq)
+				backoffFactor++
+
+				delay := min(5*backoffFactor, 120)
+				log.Infof("200 OK, same payload, delay %vs", delay)
+				time.Sleep(time.Duration(delay) * time.Second)
+
 				continue
 			} else {
-				kEq = 0
+				backoffFactor = 0
 				lastHash = hash
 			}
 
@@ -89,7 +97,7 @@ func gr(token string, uid int, e schema.Editable, closeChan <-chan struct{}) {
 				continue
 			}
 
-			log.Infof("200 OK, %s - %s", pl.Item.Name, strings.Join(lo.Map(pl.Item.Artists, func(item api.ArtistSI, index int) string { return item.Name }), ", "))
+			log.Infof("200 OK, set presence to %s - %s", pl.Item.Name, strings.Join(lo.Map(pl.Item.Artists, func(item api.ArtistSI, index int) string { return item.Name }), ", "))
 		}
 	}
 }
