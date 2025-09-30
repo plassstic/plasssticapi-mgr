@@ -36,17 +36,19 @@ func makeRequest(method string, path string) (response *http.Response, err error
 	return response, nil
 }
 
-func unmarshalToMap(bodyBytes []byte, mapInst map[string]interface{}) error {
-	return json.Unmarshal(bodyBytes, &mapInst)
+func unmarshalToMap(bodyBytes []byte) (mapInst map[string]interface{}, err error) {
+	err = json.Unmarshal(bodyBytes, &mapInst)
+	return
 }
 
-func unmarshalToPlayer(bodyBytes []byte, playerSI *PlayerSI) error {
-	return json.Unmarshal(bodyBytes, playerSI)
+func unmarshalToPlayer(bodyBytes []byte) (*PlayerSI, error) {
+	var player PlayerSI
+	err := json.Unmarshal(bodyBytes, &player)
+	return &player, err
 }
 func GetMe(userID int64) (map[string]interface{}, error) {
 	var response *http.Response
 	var err error
-	var data map[string]interface{}
 	var bodyBytes []byte
 
 	if response, err = makeRequest(
@@ -57,41 +59,6 @@ func GetMe(userID int64) (map[string]interface{}, error) {
 		),
 	); err != nil {
 		return nil, err
-	}
-
-	defer func(b io.ReadCloser) {
-		_ = b.Close()
-	}(response.Body)
-
-	if bodyBytes, err = io.ReadAll(response.Body); err != nil {
-		return nil, err
-	}
-
-	if err = unmarshalToMap(bodyBytes, data); err != nil {
-		return nil, err
-	}
-
-	return data, nil
-}
-
-func GetPlayer(userID int64) (*PlayerSI, error) {
-	var response *http.Response
-	var err error
-	var playerSI PlayerSI
-	var bodyBytes []byte
-
-	if response, err = makeRequest(
-		"GET",
-		fmt.Sprintf(
-			"/public/spotify/api/%v/me",
-			userID,
-		),
-	); err != nil {
-		return nil, err
-	}
-
-	if response.StatusCode == 204 {
-		return nil, nil // No Content from Spotify API, player is inactive
 	}
 
 	defer func(b io.ReadCloser) {
@@ -102,9 +69,31 @@ func GetPlayer(userID int64) (*PlayerSI, error) {
 		return nil, err
 	}
 
-	if err = unmarshalToPlayer(bodyBytes, &playerSI); err != nil {
+	return unmarshalToMap(bodyBytes)
+}
+
+func GetPlayer(userID int64) (*PlayerSI, error) {
+	var response *http.Response
+	var err error
+	var bodyBytes []byte
+
+	if response, err = makeRequest(
+		"GET",
+		fmt.Sprintf(
+			"/public/spotify/api/%v/me/player",
+			userID,
+		),
+	); err != nil || response.StatusCode == 204 {
 		return nil, err
 	}
 
-	return &playerSI, nil
+	defer func(b io.ReadCloser) {
+		b.Close()
+	}(response.Body)
+
+	if bodyBytes, err = io.ReadAll(response.Body); err != nil {
+		return nil, err
+	}
+
+	return unmarshalToPlayer(bodyBytes)
 }

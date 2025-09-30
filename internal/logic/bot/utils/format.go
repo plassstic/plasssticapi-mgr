@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/samber/lo"
@@ -121,9 +122,9 @@ func GetFormattedPlayer(player *PlayerSI) string {
 		return total + (len(arr)-1)*2
 	}
 
-	largest := max(calcLength(trackStr), calcLength(albumStr), calcLength(statusStr))
+	largest := max(calcLength(trackStr), calcLength(albumStr), calcLength(statusStr)) - 8
 
-	a := int(float64(largest) * 0.75)
+	a := int(math.Abs(float64(largest)) * 0.75)
 	borderStr := fmt.Sprintf(">✦\t\t%s%s%s%s%s",
 		strings.Repeat("┅", a/7),
 		strings.Repeat("┉", a/9),

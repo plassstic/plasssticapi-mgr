@@ -36,7 +36,14 @@ func runThread(userId int, token string, editable schema.Editable, closeChan <-c
 	log := GetLogger(fmt.Sprintf("thread.%v", userId))
 
 	if bot, err = tg.New(token); err != nil {
-		_, _ = bot.SendMessage(context.Background(), &tg.SendMessageParams{ChatID: userId, Text: fmt.Sprintf("failed to start your bot %v", err)})
+		_, _ = bot.
+			SendMessage(
+				context.Background(),
+				&tg.SendMessageParams{
+					ChatID: userId,
+					Text:   fmt.Sprintf("failed to start your bot %v", err),
+				},
+			)
 		return
 	}
 
@@ -54,14 +61,14 @@ func runThread(userId int, token string, editable schema.Editable, closeChan <-c
 
 			return
 		case <-ticker.C:
-			pl, err := GetPlayer(int64(userId))
+			playerSI, err := GetPlayer(int64(userId))
 
 			if err != nil {
 				log.Errorf("failed to get player for userId %v (%e)", userId, err)
 				continue
 			}
 
-			if pl == nil {
+			if playerSI == nil {
 				backoffFactor++
 
 				delay := min(5*backoffFactor, 120)
@@ -73,7 +80,7 @@ func runThread(userId int, token string, editable schema.Editable, closeChan <-c
 				backoffFactor = 0
 			}
 
-			text := GetFormattedPlayer(pl)
+			text := GetFormattedPlayer(playerSI)
 			hash := fmt.Sprintf("%x", sha3.Sum256([]byte(text)))
 
 			if hash == lastHash {
@@ -100,11 +107,21 @@ func runThread(userId int, token string, editable schema.Editable, closeChan <-c
 			})
 
 			if err != nil {
-				log.Errorf("failed to edit msg for userId %v (%e)", userId, err)
+				log.Errorf("failed to edit msg for userId %v (%e), pl %s", userId, err, text)
 				continue
 			}
 
-			log.Infof("200 OK, set presence to %s - %s", pl.Item.Name, strings.Join(lo.Map(pl.Item.Artists, func(item ArtistSI, index int) string { return item.Name }), ", "))
+			log.Infof(
+				"200 OK, set presence to %s - %s",
+				playerSI.Item.Name,
+				strings.Join(
+					lo.Map(
+						playerSI.Item.Artists,
+						func(item ArtistSI, index int) string { return item.Name },
+					),
+					", ",
+				),
+			)
 		}
 	}
 }
