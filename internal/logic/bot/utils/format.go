@@ -122,7 +122,7 @@ func GetFormattedPlayer(player *PlayerSI) string {
 		return total + (len(arr)-1)*2
 	}
 
-	largest := max(calcLength(trackStr), calcLength(albumStr)-12, calcLength(statusStr))
+	largest := max(calcLength(trackStr)-8, calcLength(albumStr)-12, calcLength(statusStr))
 
 	a := int(math.Abs(float64(largest)) * 0.75)
 	borderStr := fmt.Sprintf(">✦\t\t%s%s%s%s%s",
