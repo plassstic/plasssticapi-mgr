@@ -6,4 +6,4 @@ WORKDIR /deploy
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o mgr_ex 'plassstic.tech/gopkg/golang-manager/cmd'
+RUN go build -o mgr_ex 'plassstic.tech/gopkg/plassstic-mgr/cmd'
