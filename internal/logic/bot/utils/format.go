@@ -122,7 +122,7 @@ func GetFormattedPlayer(player *PlayerSI) string {
 		return total + (len(arr)-1)*2
 	}
 
-	largest := max(calcLength(trackStr), calcLength(albumStr), calcLength(statusStr)) - 8
+	largest := max(calcLength(trackStr), calcLength(albumStr)-12, calcLength(statusStr))
 
 	a := int(math.Abs(float64(largest)) * 0.75)
 	borderStr := fmt.Sprintf(">✦\t\t%s%s%s%s%s",
@@ -134,7 +134,7 @@ func GetFormattedPlayer(player *PlayerSI) string {
 	)
 	border := []string{borderStr}
 
-	progressBarSpace := int(float64(a) * 0.4)
+	progressBarSpace := int(float64(a) * 0.45)
 	plRatio := float64(player.ProgressMs) / float64(player.Item.DurationMs)
 	npRatio := 1.0 - plRatio
 
