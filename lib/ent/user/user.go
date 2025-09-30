@@ -4,7 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
 )
 
 const (

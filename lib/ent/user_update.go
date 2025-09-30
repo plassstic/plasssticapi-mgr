@@ -10,10 +10,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/internal"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/predicate"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 )
 
 // UserUpdate is the builder for updating User entities.

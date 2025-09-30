@@ -6,12 +6,12 @@ import (
 
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/api"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/utils"
-	bot "plassstic.tech/gopkg/golang-manager/internal/logic/thread"
-	. "plassstic.tech/gopkg/golang-manager/internal/service"
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/api"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/bot"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/bot/utils"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/thread"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/service"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
 )
 
 type cmd struct {
@@ -25,11 +25,11 @@ func cmdHandlers(client *ent.Client) []*TelegramHandler {
 	return []*TelegramHandler{
 		{
 			Handler: c.handleStart,
-			MFunc:   MSGExact("/start"),
+			Match:   MSGExact("/start"),
 		},
 		{
 			Handler: c.handleStart,
-			MFunc:   CQExact("start_menu"),
+			Match:   CQExact("start_menu"),
 		},
 	}
 }
@@ -37,7 +37,7 @@ func cmdHandlers(client *ent.Client) []*TelegramHandler {
 func (c *cmd) handleStart(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	var text string
 
-	info := GetUInfo(u)
+	info := UIFromUpdate(u)
 
 	if info == nil {
 		return
@@ -67,7 +67,7 @@ func (c *cmd) handleStart(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 			text = "Привет, %s (TG_ID: %d, SP_ID: %s) 👋\n\n" +
 				"В этом боте ты сможешь подключить в свой канал автообновляющийся статус Spotify :)"
 
-			if _, ok := bot.Repo.D[int(info.User.ID)]; ok {
+			if HasThread(info.User.ID) {
 				text += fmt.Sprintf("\n\n✅ Активен поток для бота @%s", user.Bot.Handle)
 			}
 			text = fmt.Sprintf(text, info.User.Handle, user.ID, me["id"])

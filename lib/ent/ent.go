@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

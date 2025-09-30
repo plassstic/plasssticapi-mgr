@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	. "plassstic.tech/gopkg/golang-manager/internal/repository"
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
+	"github.com/samber/lo"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/repository"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
 )
 
 var ctx = context.Background()
@@ -33,11 +34,24 @@ func (srv *UserService) Get(userId int) *UserService {
 	return srv
 }
 
-func (srv *UserService) GetAllNonNil() *UserService {
+func (srv *UserService) GetAll() *UserService {
 	srv.result = srv.
 		repo.
-		GetAllNonNil(ctx).
+		GetAll(ctx).
 		Result()
+
+	return srv
+}
+
+func (srv *UserService) FilterMany(filter func(item *ent.User, index int) bool) *UserService {
+	var slice []*ent.User
+	var ok bool
+
+	if slice, ok = srv.result.([]*ent.User); !ok {
+		return srv
+	}
+
+	srv.result = lo.Filter(slice, filter)
 
 	return srv
 }

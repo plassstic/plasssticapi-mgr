@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/api"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/api"
 )
 
 func escapeMarkdownV2(text string) string {

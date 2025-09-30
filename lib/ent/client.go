@@ -9,14 +9,14 @@ import (
 	"log"
 	"reflect"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent/migrate"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent/internal"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/internal"
 )
 
 // Client is the client that holds all ent builders.

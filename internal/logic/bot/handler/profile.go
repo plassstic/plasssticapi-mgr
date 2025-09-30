@@ -6,49 +6,62 @@ import (
 
 	tg "github.com/go-telegram/bot"
 	tgm "github.com/go-telegram/bot/models"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot"
-	. "plassstic.tech/gopkg/golang-manager/internal/logic/bot/utils"
-	"plassstic.tech/gopkg/golang-manager/internal/service"
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
-	"plassstic.tech/gopkg/golang-manager/lib/fsm"
-)
-
-const (
-	fsProfNewToken      fsm.StateID = "newToken"
-	fsProfNewMessage    fsm.StateID = "newMessage"
-	fsProfChangeMessage fsm.StateID = "changeMessage"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/depend/logger"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/bot"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/bot/handler/state"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/bot/utils"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/service"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/fsm"
 )
 
 type profile struct {
 	client *ent.Client
 }
 
-func profHandlers(client *ent.Client) []*TelegramHandler {
+func profileHandlers(client *ent.Client) []*TelegramHandler {
 	p := &profile{
 		client: client,
 	}
 
+	p.setProfileCallbacks()
+
 	return []*TelegramHandler{
 		{
 			Handler: p.handleMenu,
-			MFunc:   CQExact("settings"),
+			Match:   CQExact("settings"),
 		},
 		{
 			Handler: p.handleToken,
-			MFunc:   CQExact("add_bot"),
+			Match:   CQExact("add_bot"),
 		},
 	}
+}
+
+func (p *profile) setProfileCallbacks() {
+	GlobalFSM.AddCallbacks(map[fsm.StateID]fsm.Callback{
+		ProfileNewTokenState: func(ctx context.Context, b *tg.Bot, update *tgm.Update) {
+			return
+		},
+		ProfileNewMessageState: p.handleMessage,
+		ProfileChangeMessageState: func(ctx context.Context, b *tg.Bot, update *tgm.Update) {
+			return
+		},
+	})
 }
 
 func (p *profile) handleMenu(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	var text string
 	var kb *tgm.InlineKeyboardMarkup
 
-	info := GetUInfo(u)
-	user, err := (&service.UserService{}).With(p.client).Get(int(info.User.ID)).One()
+	info := UIFromUpdate(u)
+	user, err := (&UserService{}).
+		With(p.client).
+		Get(int(info.User.ID)).
+		One()
 
 	if err != nil {
-		return
+		GetLogger("profile.handleMenu").Panicf("panic! %e", err)
 	}
 
 	text = "🛠 Настройки"
@@ -84,15 +97,11 @@ func (p *profile) handleMenu(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 func (p *profile) handleToken(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	var text string
 
-	info := GetUInfo(u)
-
-	if info == nil {
-		return
-	}
+	info := UIFromUpdate(u)
 
 	text = "Введите BOT_TOKEN для бота с назначенными правами администратора в целевом канале:\n\n<i>Подсказка: Создать бота можно через @botfather, отправив <b>ему</b> команду <code>/newbot</code></i>"
 
-	_ = GlobalFSM.Transition(ctx, info.User.ID, fsProfNewToken, b, u)
+	_ = GlobalFSM.Transition(ctx, info.User.ID, ProfileNewTokenState, b, u)
 
 	info.Respond(ctx, b, text, NilMarkup)
 }
@@ -102,13 +111,13 @@ func (p *profile) handleMessage(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 
 	text = "Перешлите сообщение из канала с ботом-администратором, которое вы хотите выделить под Spotify:"
 
-	GetUInfo(u).Respond(ctx, b, text, NilMarkup)
+	UIFromUpdate(u).Respond(ctx, b, text, NilMarkup)
 }
 
 func (p *profile) handleClear(ctx context.Context, b *tg.Bot, u *tgm.Update) {
 	var text string
 
-	info := GetUInfo(u)
+	info := UIFromUpdate(u)
 
 	text = "Перешлите сообщение из канала с ботом-администратором, которое вы хотите выделить под Spotify:"
 

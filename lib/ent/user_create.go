@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 )
 
 // UserCreate is the builder for creating a User entity.

@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
 	// required by schema hooks.
-	_ "plassstic.tech/gopkg/golang-manager/lib/ent/runtime"
+	_ "plassstic.tech/gopkg/plassstic-mgr/lib/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/migrate"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/migrate"
 )
 
 type (

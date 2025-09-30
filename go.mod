@@ -1,4 +1,4 @@
-module plassstic.tech/gopkg/golang-manager
+module plassstic.tech/gopkg/plassstic-mgr
 
 go 1.25
 

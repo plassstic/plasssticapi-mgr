@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"plassstic.tech/gopkg/golang-manager/internal/depend/logger"
-	"plassstic.tech/gopkg/golang-manager/internal/logic/api"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/depend/logger"
+	. "plassstic.tech/gopkg/plassstic-mgr/internal/logic/api"
 )
 
 type Config struct {
@@ -15,7 +15,7 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	log := logger.GetLogger("config.NewConfig")
+	log := GetLogger("depend.spawnConfig")
 	data := getPostgresData()
 	botToken := os.Getenv("BOT_TOKEN")
 
@@ -29,7 +29,7 @@ func NewConfig() *Config {
 		log.Panic("panic! environment variable API_DOMAIN is unspecified")
 	}
 
-	api.Domain = apiDomain
+	Domain = apiDomain
 
 	return &Config{
 		PostgresData: data,
@@ -38,10 +38,10 @@ func NewConfig() *Config {
 }
 
 func getPostgresData() string {
-	log := logger.GetLogger("config.getPostgresData")
+	log := GetLogger("config.getPostgresData")
 
 	if err := godotenv.Load(); err != nil {
-		log.Named("config.getPostgresData").Panic(fmt.Sprintf("panic! <%Type> %v", err, err))
+		log.Panicf("panic! <%T> %e", err, err)
 	}
 
 	url := fmt.Sprintf(

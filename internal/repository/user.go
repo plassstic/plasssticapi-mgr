@@ -4,11 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"entgo.io/ent/dialect/sql"
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
 )
 
 type UserRepo struct {
@@ -21,14 +18,12 @@ func (repo *UserRepo) With(tx *ent.Tx) *UserRepo {
 	return repo
 }
 func (repo *UserRepo) SetBoth(ctx context.Context, userId int64, bot schema.Bot, editable schema.Editable) *UserRepo {
-
 	if repo.resultNotNil() {
 		return repo
 	}
+	var err error
 
-	var e error
-
-	repo.result, e = repo.
+	repo.result, err = repo.
 		tx.
 		Client().
 		User.
@@ -37,22 +32,19 @@ func (repo *UserRepo) SetBoth(ctx context.Context, userId int64, bot schema.Bot,
 		SetEditable(editable).
 		Save(ctx)
 
-	if e != nil {
-		repo.result = e
+	if err != nil {
+		repo.result = err
 	}
-
 	return repo
 }
 
 func (repo *UserRepo) NilBoth(ctx context.Context, userId int64) *UserRepo {
-
 	if repo.resultNotNil() {
 		return repo
 	}
+	var err error
 
-	var e error
-
-	repo.result, e = repo.
+	repo.result, err = repo.
 		tx.
 		Client().
 		User.
@@ -61,31 +53,26 @@ func (repo *UserRepo) NilBoth(ctx context.Context, userId int64) *UserRepo {
 		SetEditable(schema.Editable{}).
 		Save(ctx)
 
-	if e != nil {
-		repo.result = e
+	if err != nil {
+		repo.result = err
 	}
-
 	return repo
 }
 func (repo *UserRepo) GetByID(ctx context.Context, userId int) *UserRepo {
 	if repo.resultNotNil() {
 		return repo
 	}
+	var err error
 
-	var e error
-
-	repo.result, e = repo.
+	repo.result, err = repo.
 		tx.
 		Client().
 		User.
 		Get(ctx, userId)
 
-	//logger.GetLogger("repo").Debugf("Got %v (err %v)", repo.result, e)
-
-	if e != nil {
-		repo.result = e
+	if err != nil {
+		repo.result = err
 	}
-
 	return repo
 }
 
@@ -93,10 +80,9 @@ func (repo *UserRepo) Create(ctx context.Context, userId int) *UserRepo {
 	if repo.resultNotNil() {
 		return repo
 	}
+	var err error
 
-	var e error
-
-	repo.result, e = repo.
+	repo.result, err = repo.
 		tx.
 		Client().
 		User.
@@ -104,12 +90,9 @@ func (repo *UserRepo) Create(ctx context.Context, userId int) *UserRepo {
 		SetID(userId).
 		Save(ctx)
 
-	//logger.GetLogger("repo").Debugf("Created %#v (err %#v)", repo.result, e)
-
-	if e != nil {
-		repo.result = e
+	if err != nil {
+		repo.result = err
 	}
-
 	return repo
 }
 
@@ -170,27 +153,20 @@ func (repo *UserRepo) compareResultErrIs(err error) bool {
 	return false
 }
 
-func hasBot() predicate.User {
-	return sql.AndPredicates(sql.FieldNotNull(user.FieldBot), sql.FieldNotNull(user.FieldEditable))
-}
-func (repo *UserRepo) GetAllNonNil(ctx context.Context) *UserRepo {
+func (repo *UserRepo) GetAll(ctx context.Context) *UserRepo {
 	if repo.resultNotNil() {
 		return repo
 	}
-
 	var e error
 
 	repo.result, e = repo.
 		tx.
 		Client().
-		User.Query().Where(hasBot()).All(ctx)
-
-	//logger.GetLogger("repo").Debugf("Got %v (err %v)", repo.result, e)
+		User.Query().All(ctx)
 
 	if e != nil {
 		repo.result = e
 	}
-
 	return repo
 }
 

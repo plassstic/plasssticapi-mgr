@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/go-telegram/bot/models"
+import tgm "github.com/go-telegram/bot/models"
 
 type userInfo struct {
 	ID     int64
@@ -12,10 +12,10 @@ type UpdateInfo struct {
 	User    userInfo
 	Payload string
 	Type    interface{}
-	Msg     *models.Message
+	Msg     *tgm.Message
 }
 
-func GetUInfo(u *models.Update) *UpdateInfo {
+func UIFromUpdate(u *tgm.Update) *UpdateInfo {
 	switch {
 	case u.Message != nil:
 		return &UpdateInfo{
@@ -25,7 +25,7 @@ func GetUInfo(u *models.Update) *UpdateInfo {
 				ChatID: u.Message.Chat.ID,
 			},
 			Payload: u.Message.Text,
-			Type:    models.Message{},
+			Type:    tgm.Message{},
 			Msg:     u.Message,
 		}
 	case u.CallbackQuery != nil:
@@ -36,10 +36,10 @@ func GetUInfo(u *models.Update) *UpdateInfo {
 				ChatID: u.CallbackQuery.Message.Message.Chat.ID,
 			},
 			Payload: u.CallbackQuery.Data,
-			Type:    models.CallbackQuery{},
+			Type:    tgm.CallbackQuery{},
 			Msg:     u.CallbackQuery.Message.Message,
 		}
 	default:
-		return nil
+		panic("unknown update")
 	}
 }

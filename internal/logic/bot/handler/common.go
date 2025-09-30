@@ -3,18 +3,18 @@ package handler
 import (
 	"slices"
 
-	"github.com/go-telegram/bot"
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	tg "github.com/go-telegram/bot"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
 )
 
 type TelegramHandler struct {
-	Handler bot.HandlerFunc
-	MFunc   bot.MatchFunc
+	Handler tg.HandlerFunc
+	Match   tg.MatchFunc
 }
 
-func Register(b *bot.Bot, c *ent.Client) {
-	handlers := slices.Concat(cmdHandlers(c), profHandlers(c))
+func Register(b *tg.Bot, c *ent.Client) {
+	handlers := slices.Concat(cmdHandlers(c), profileHandlers(c))
 	for _, h := range handlers {
-		b.RegisterHandlerMatchFunc(h.MFunc, h.Handler)
+		b.RegisterHandlerMatchFunc(h.Match, h.Handler)
 	}
 }

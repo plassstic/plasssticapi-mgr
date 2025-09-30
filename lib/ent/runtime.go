@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code

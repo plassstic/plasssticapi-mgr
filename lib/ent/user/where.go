@@ -4,7 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

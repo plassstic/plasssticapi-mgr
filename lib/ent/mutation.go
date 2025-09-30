@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/predicate"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/schema"
-	"plassstic.tech/gopkg/golang-manager/lib/ent/user"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/predicate"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/schema"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent/user"
 )
 
 const (

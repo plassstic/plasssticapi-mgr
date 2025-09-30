@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"plassstic.tech/gopkg/golang-manager/lib/ent"
+	"plassstic.tech/gopkg/plassstic-mgr/lib/ent"
 )
 
 // The UserFunc type is an adapter to allow the use of ordinary
