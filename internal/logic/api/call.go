@@ -65,6 +65,10 @@ func GetPlayer(userID int64) (*PlayerSI, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode == 204 {
+		return nil, nil
+	}
+
 	var r PlayerSI
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
